@@ -1,0 +1,2 @@
+export const REALM_GRAPHQL_ENDPOINT = "<REALM-GRAPHQL-ENDPOINT>";
+export const REALM_ID = "<REALM-APP-ID>";
