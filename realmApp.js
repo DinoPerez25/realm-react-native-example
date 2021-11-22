@@ -1,6 +1,4 @@
 import Realm from "realm";
 
-
-// Invokes the shared instance of the Realm app.
-const app = new Realm.App({ id: "tasktracker-yowxp" }); // Set Realm app ID here.
+const app = new Realm.App({ id: "gdc-realm-test-hqukw" });
 export default app;

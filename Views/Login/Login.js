@@ -9,25 +9,18 @@ export function Login({ navigation }) {
   const { user, signUp, signIn } = useAuth();
 
   useEffect(() => {
-    // If there is a user logged in, go to the Projects page.
     if (user != null) {
       navigation.navigate("FormSection");
     }
   }, [user]);
 
-  // The onPressSignIn method calls AuthProvider.signIn with the
-  // email/password in state.
   const onPressSignIn = async () => {
-    console.log("Press sign in");
     try {
       await signIn(email, password);
     } catch (error) {
       Alert.alert(`Failed to sign in: ${error.message}`);
     }
   };
-
-  // The onPressSignUp method calls AuthProvider.signUp with the
-  // email/password in state and then signs in.
   const onPressSignUp = async () => {
     try {
       await signUp(email, password);
@@ -38,28 +31,33 @@ export function Login({ navigation }) {
   };
 
   return (
-    <View>
-      <Text>Signup or Signin:</Text>
+    <View style={styles.container}>
+      <Text>Iniciar sesión:</Text>
       <View style={styles.inputContainer}>
         <TextInput
           onChangeText={setEmail}
           value={email}
-          placeholder="email"
+          placeholder="Correo"
           style={styles.inputStyle}
           autoCapitalize="none"
+          keyboardType="email-address"
+
         />
       </View>
       <View style={styles.inputContainer}>
         <TextInput
           onChangeText={(text) => setPassword(text)}
           value={password}
-          placeholder="password"
+          placeholder="Contraseña"
           style={styles.inputStyle}
           secureTextEntry
         />
       </View>
-      <Button onPress={onPressSignIn}>Iniciar sesión</Button>
-      <Button onPress={onPressSignUp}>Registrase</Button>
+      <View style={styles.buttonsContainer}>
+
+        <Button onPress={onPressSignIn}>Iniciar sesión</Button>
+        <Button onPress={onPressSignUp} size='small' appearance='ghost'>Registrase</Button>
+      </View>
     </View>
   );
 }
@@ -69,11 +67,21 @@ const styles = StyleSheet.create({
     flex: 1,
     with: '100%',
     padding: 25,
-  },
-  head: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     alignItems: 'center',
-    marginVertical: 25,
-  }
+  },
+  inputContainer: {
+    width: '70%',
+    marginVertical: 10,
+  },
+  inputStyle: {
+    borderWidth: 1,
+    borderColor: 'gray',
+    borderRadius: 4,
+    paddingLeft: 15,
+    width: '100%',
+  },
+  buttonsContainer: {
+    marginVertical: 10,
+  },
 });
