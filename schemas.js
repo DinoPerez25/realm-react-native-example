@@ -1,9 +1,9 @@
-import { ObjectId } from "bson";
+import { UUID } from "bson";
 
 export class Sale {
   constructor({
     _partition,
-    _id = new ObjectId(),
+    _id = new UUID(),
     itemId,
     quantity,
     salePersonId,
@@ -11,19 +11,19 @@ export class Sale {
   }) {
     this._partition = _partition;
     this._id = _id;
-    this.itemId = itemId;
+    this.itemId = new UUID(itemId);
     this.quantity = quantity;
-    this.salePersonId = salePersonId;
+    this.salePersonId = new UUID(salePersonId);
     this.total = total;
   }
   static schema = {
     name: 'Sales',
     properties: {
-      _id: 'objectId',
+      _id: 'uuid',
       _partition: 'string',
-      itemId: 'objectId',
+      itemId: 'uuid',
       quantity: 'int',
-      salePersonId: 'objectId',
+      salePersonId: 'uuid',
       total: 'double',
     },
     primaryKey: "_id",
@@ -33,7 +33,7 @@ export class Items {
   constructor({
     name,
     partition,
-    id = new ObjectId(),
+    id = new UUID(),
   }) {
     this._partition = partition;
     this._id = id;
@@ -42,7 +42,7 @@ export class Items {
   static schema = {
     name: 'Items',
     properties: {
-      _id: 'objectId',
+      _id: 'uuid',
       _partition: 'string',
       name: 'string',
     },
@@ -53,7 +53,7 @@ export class User {
   constructor({
     name,
     _partition,
-    _id = new ObjectId(),
+    _id = String(new ObjectId()),
   }) {
     this._partition = _partition;
     this._id = _id;
@@ -73,7 +73,7 @@ export class Salespeople {
   constructor({
     name,
     _partition,
-    _id = new ObjectId(),
+    _id = new UUID(),
   }) {
     this._partition = _partition;
     this._id = _id;
@@ -82,7 +82,7 @@ export class Salespeople {
   static schema = {
     name: 'Salespeople',
     properties: {
-      _id: 'objectId',
+      _id: 'uuid',
       _partition: 'string',
       name: 'string',
     },
