@@ -26,6 +26,7 @@ const AuthProvider = ({ children }) => {
           existingRealmFileBehavior: OpenRealmBehaviorConfiguration,
         },
       }).then((userRealm) => {
+        console.log('CONNECTION AUTH SUCCESS', user.id)
         realmRef.current = userRealm;
       });
       return () => {
@@ -45,7 +46,7 @@ const AuthProvider = ({ children }) => {
   };
 
   const signUp = async (email, password) => {
-    await app.emailPasswordAuth.registerUser(email, password);
+    await app.emailPasswordAuth.registerUser({ email, password });
   };
 
   const signOut = () => {
