@@ -5,6 +5,7 @@ import { Controller } from 'react-hook-form';
 const ControlledInput = ({
   control,
   name,
+  error,
   label,
   inputProps,
   controllerProps,
@@ -33,6 +34,7 @@ const ControlledInput = ({
         />
       )}
     />
+    {error && <Text style={styles.error}>{error.message}</Text>}
   </Fragment>
 
   )
@@ -47,5 +49,8 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     paddingLeft: 15,
     width: '100%',
+  },
+  error: {
+    color: 'red'
   },
 });
