@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { View, TextInput, Alert, StyleSheet } from "react-native";
 import { useAuth } from "../../Contexts/AuthContext";
-import { Button, Text } from '@ui-kitten/components';
+import { Button, Text, Modal, Spinner } from '@ui-kitten/components';
 
 export function Login({ navigation }) {
   const [loading, setLoading] = useState(false);
@@ -37,6 +37,10 @@ export function Login({ navigation }) {
 
   return (
     <View style={styles.container}>
+
+      <Modal visible={loading} backdropStyle={styles.backdrop}>
+        <Spinner></Spinner>
+      </Modal>
       <Text>Iniciar sesión:</Text>
       <View style={styles.inputContainer}>
         <TextInput

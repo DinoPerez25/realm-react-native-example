@@ -7,8 +7,9 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import ControlledSelect from '../../Components/ControlledSelect';
 import ControlledInput from '../../Components/ControlledInput';
 import { useData } from '../../Contexts/DataContext';
-import { useSales } from '../../Contexts/SalesContext';
+import { useAuth } from '../../Contexts/AuthContext';
 import app from "../../realmApp";
+import { Sale } from '../../schemas';
 
 const schema = yup.object({
   salePersonId: yup.string().required('Requerido salePersonId'),
@@ -19,7 +20,7 @@ const schema = yup.object({
 
 const FormView = ({ navigation }) => {
   const [user] = useState(app.currentUser);
-  const { createSale } = useSales();
+  const { getRealm } = useAuth();
   const { data } = useData();
   console.log('DATA->', data);
   const { control, trigger, getValues } = useForm({
@@ -37,12 +38,25 @@ const FormView = ({ navigation }) => {
     }
     console.log('HERE');
     const data = getValues();
-    createSale({
-      ...data,
-      quantity: Number(data.quantity),
-      total: Number(data.total),
-      _partition: `user=${user?.id}`,
-    });
+    try {
+      const realm = await getRealm();
+      const sale = new Sale({
+        ...data,
+        quantity: Number(data.quantity),
+        total: Number(data.total),
+        _partition: `user=${user?.id}`,
+      });
+      realm.write(() => {
+        realm.create(
+          "Sales",
+          sale
+        );
+      });
+    } catch (error) {
+      if (error) {
+        console.log(error.message);
+      }
+    }
     Alert.alert('VENTA CREADA');
   };
   return (

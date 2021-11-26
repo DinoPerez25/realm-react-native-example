@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect, useRef } from "react";
+import React, { useContext, useState } from "react";
 import Realm from "realm";
 import app from "../realmApp";
 import { Sale, User } from '../schemas'
@@ -7,16 +7,15 @@ const AuthContext = React.createContext(null);
 
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(app.currentUser);
-  const realmRef = useRef(null);
 
-  useEffect(() => {
+  const getRealm = async () => {
     if (user) {
       const realmFileBehavior = {
         type: "downloadBeforeOpen",
         timeOut: 1000,
         timeOutBehavior: "openLocalRealm",
       };
-      Realm.open({
+      const config = {
         schema: [
           User.schema,
           Sale.schema,
@@ -27,19 +26,21 @@ const AuthProvider = ({ children }) => {
           existingRealmFileBehavior: realmFileBehavior,
           newRealmFileBehavior: realmFileBehavior,
         },
-      }).then((userRealm) => {
-        console.log('CONNECTION AUTH SUCCESS', user.id)
-        realmRef.current = userRealm;
-      });
-      return () => {
-        const userRealm = realmRef.current;
-        if (userRealm) {
-          userRealm.close();
-          realmRef.current = null;
-        }
       };
+      return Realm.open(config);
     }
-  }, [user]);
+  };
+  const getLocalRealm = async () => {
+    if (user) {
+      const config = {
+        schema: [
+          User.schema,
+          Sale.schema,
+        ],
+      };
+      return Realm.open(config);
+    }
+  };
 
   const signIn = async (email, password) => {
     const creds = Realm.Credentials.emailPassword(email, password);
@@ -66,6 +67,8 @@ const AuthProvider = ({ children }) => {
         signUp,
         signIn,
         signOut,
+        getRealm,
+        getLocalRealm,
         user,
       }}
     >

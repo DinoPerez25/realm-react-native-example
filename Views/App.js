@@ -1,11 +1,12 @@
 
 import React, { useEffect } from 'react';
-import { SalesProvider } from '../Contexts/SalesContext';
 import { checkInternetConnection } from 'react-native-offline'
 
 import * as eva from '@eva-design/eva';
+import { EvaIconsPack } from '@ui-kitten/eva-icons';
 import {
-  ApplicationProvider
+  ApplicationProvider,
+  IconRegistry
 } from '@ui-kitten/components';
 
 import Navigation from '../Routes/Navigation';
@@ -35,17 +36,19 @@ const App = () => {
     }
   }, [isConnected]);
   return (
-    <AuthProvider>
-      <LoadingProvider>
-        <ApplicationProvider {...eva} theme={eva.light}>
-          <DataProvider>
-            <SalesProvider>
+    <>
+
+      <IconRegistry icons={EvaIconsPack} />
+      <AuthProvider>
+        <LoadingProvider>
+          <ApplicationProvider {...eva} theme={eva.light}>
+            <DataProvider>
               <Navigation />
-            </SalesProvider>
-          </DataProvider>
-        </ApplicationProvider>
-      </LoadingProvider>
-    </AuthProvider>
+            </DataProvider>
+          </ApplicationProvider>
+        </LoadingProvider>
+      </AuthProvider>
+    </>
   );
 };
 
