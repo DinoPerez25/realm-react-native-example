@@ -1,50 +1,78 @@
-import React, { useContext, useState, useEffect, useRef } from "react";
+import React, { useContext, useState, useRef, useEffect } from "react";
+import { Alert } from "react-native";
 import Realm from "realm";
 import { Sale } from "../schemas";
-import app from '../realmApp';
+import { useAuth } from "./AuthContext";
 
 export const SalesContext = React.createContext(null);
 
 export const SalesProvider = ({ children }) => {
-  const [user] = useState(app.currentUser);
-  const realmRef = useRef(null);
+  const [sales, setSales] = useState(null);
+  const { user } = useAuth();
+  const realmRef = useRef();
+
   useEffect(() => {
+    console.log('user sales', user?.id, Realm.path);
     if (user) {
       Realm.open({
         schema: [Sale.schema],
         sync: {
           user,
           partitionValue: `user=${user?.id}`,
+          error: (error) => {
+            Alert.alert(`Error ${error.name}`, error.message)
+          },
         },
-      }).then((projectRealm) => {
-        realmRef.current = projectRealm;
-      });
+      }).then((realm) => {
+        console.log('CONNECTION SALES SUCCESS', user.id)
+        realmRef.current = realm;
+      })
 
       return () => {
-        const projectRealm = realmRef.current;
-        if (projectRealm) {
-          projectRealm.close();
-          realmRef.current = null;
+        console.log('CLOSE SALES CONNECTION');
+        const userRealm = realmRef.current;
+        if (userRealm) {
+          userRealm.close();
         }
       };
     }
-  }, []);
+  }, [user]);
+
+  const getObjectValues = (array) => {
+    return array.map(item => {
+      return JSON.parse(JSON.stringify(item))
+    });
+  };
 
   const createSale = (newSaleData) => {
-    const projectRealm = realmRef.current;
+    console.log(realmRef.current);
+    const salesRealm = realmRef.current;
     const sale = new Sale(newSaleData);
-    projectRealm.write(() => {
-      projectRealm.create(
+    salesRealm.write(() => {
+      salesRealm.create(
         "Sales",
         sale
       );
     });
   };
 
+  const getSales = () => {
+    Realm.open({
+      inMemory: false,
+      schema: [Sale.schema],
+    }).then((realm) => {
+      const sales = getObjectValues(realm.objects('Sales'));
+      setSales(sales);
+      console.log('SALES ON CONTEXT->', sales);
+    })
+  };
+
   return (
     <SalesContext.Provider
       value={{
-        createSale
+        createSale,
+        getSales,
+        sales
       }}
     >
       {children}

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native'
+import { View, StyleSheet, ScrollView, Alert } from 'react-native'
 import { Button, Text } from '@ui-kitten/components';
-import { useAuth } from '../../Contexts/AuthContext';
 import * as yup from 'yup';
 import { useForm, useFormState } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -14,15 +13,15 @@ import app from "../../realmApp";
 const schema = yup.object({
   salePersonId: yup.string().required('Requerido salePersonId'),
   itemId: yup.string().required('Requerido itemId'),
-  quantity: yup.number().required('Requerido total'),
+  quantity: yup.number().required('Requerido quantity'),
   total: yup.number().required('Requerido total'),
 });
 
-const FormView = () => {
+const FormView = ({ navigation }) => {
   const [user] = useState(app.currentUser);
-  const { signOut } = useAuth();
   const { createSale } = useSales();
-  const { data, syncData } = useData();
+  const { data } = useData();
+  console.log('DATA->', data);
   const { control, trigger, getValues } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {},
@@ -30,16 +29,13 @@ const FormView = () => {
 
   const { errors } = useFormState({ control });
 
-  const onSyncData = async () => {
-    console.log('SYNC')
-    await syncData()
-  };
 
   const onSubmit = async () => {
     if (!(await trigger())) {
       console.log('ERRORS->', errors);
       return;
     }
+    console.log('HERE');
     const data = getValues();
     createSale({
       ...data,
@@ -47,17 +43,13 @@ const FormView = () => {
       total: Number(data.total),
       _partition: `user=${user?.id}`,
     });
-    console.log('SALE CREADA');
+    Alert.alert('VENTA CREADA');
   };
-
-
   return (
     <ScrollView>
-
       <View style={styles.container}>
         <View style={styles.headerActions}>
-          <Button onPress={() => onSyncData()}>Sincronizar datos</Button>
-          <Button onPress={async () => await signOut()}>Cerrar sesión</Button>
+          <Button onPress={() => navigation.navigate("MenuSection")}>Volver</Button>
         </View>
         <View style={styles.head}>
           <Text>
@@ -69,7 +61,8 @@ const FormView = () => {
             control={control}
             name='salePersonId'
             label='Vendedor'
-            selectOptions={data ? data?.salespeople : []}
+            selectOptions={data ? data?.salespeopleOptions : []}
+            error={errors.salePersonId}
             selectProps={
               {
                 placeholder: {
@@ -88,7 +81,11 @@ const FormView = () => {
             control={control}
             name='itemId'
             label='Producto'
-            selectOptions={data ? data?.items : []}
+            selectOptions={data ? data?.itemsOptions : []}
+            error={errors.itemId}
+            textInputProps={{
+              onEndEditing: async () => await trigger('itemId')
+            }}
             selectProps={
               {
                 placeholder: {
@@ -97,7 +94,7 @@ const FormView = () => {
                   value: null,
                   color: '#9EA0A4',
 
-                }
+                },
               }
             }
           />
@@ -107,6 +104,7 @@ const FormView = () => {
             control={control}
             name='quantity'
             label='Cantidad'
+            error={errors.quantity}
             inputProps={{
               keyboardType: "numeric"
             }} />
@@ -115,6 +113,7 @@ const FormView = () => {
           <ControlledInput
             control={control}
             name='total'
+            error={errors.total}
             label='total'
             inputProps={{
               keyboardType: "numeric"
@@ -135,7 +134,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     with: '100%',
-    padding: 25,
+    padding: 20,
   },
   head: {
     flexDirection: 'row',
@@ -146,13 +145,13 @@ const styles = StyleSheet.create({
   headerActions: {
     width: '100%',
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
 
   },
   input: {
-    marginVertical: 10,
+    marginVertical: 5,
   },
   submitButton: {
-    marginVertical: 10,
+    marginVertical: 5,
   }
 });

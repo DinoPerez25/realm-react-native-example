@@ -1,4 +1,4 @@
 import Realm from "realm";
 
-const app = new Realm.App({ id: "gdc-realm-test-hqukw" });
+const app = new Realm.App({ id: "gdc-realm-hjayj" });
 export default app;

@@ -11,8 +11,10 @@ const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     if (user) {
-      const OpenRealmBehaviorConfiguration = {
-        type: 'openImmediately',
+      const realmFileBehavior = {
+        type: "downloadBeforeOpen",
+        timeOut: 1000,
+        timeOutBehavior: "openLocalRealm",
       };
       Realm.open({
         schema: [
@@ -22,8 +24,8 @@ const AuthProvider = ({ children }) => {
         sync: {
           user,
           partitionValue: `user=${user?.id}`,
-          newRealmFileBehavior: OpenRealmBehaviorConfiguration,
-          existingRealmFileBehavior: OpenRealmBehaviorConfiguration,
+          existingRealmFileBehavior: realmFileBehavior,
+          newRealmFileBehavior: realmFileBehavior,
         },
       }).then((userRealm) => {
         console.log('CONNECTION AUTH SUCCESS', user.id)

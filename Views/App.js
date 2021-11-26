@@ -1,6 +1,5 @@
 
 import React, { useEffect } from 'react';
-import { showMessage } from 'react-native-flash-message'
 import { SalesProvider } from '../Contexts/SalesContext';
 import { checkInternetConnection } from 'react-native-offline'
 
@@ -12,12 +11,13 @@ import {
 import Navigation from '../Routes/Navigation';
 import { AuthProvider } from '../Contexts/AuthContext';
 import { DataProvider } from '../Contexts/DataContext';
+import { LoadingProvider } from '../Contexts/LoadingContext';
+import { Alert } from 'react-native';
 
 const App = () => {
-  const [isConnected, setConnection] = React.useState(null)
+  const [isConnected, setConnection] = React.useState(true)
 
   useEffect(() => {
-    console.log(isConnected);
     const syncInterval = setInterval(() => {
       checkInternetConnection()
         .then((isConnected) => setConnection(isConnected))
@@ -28,36 +28,23 @@ const App = () => {
 
   useEffect(() => {
     if (!isConnected) {
-      showMessage({
-        description:
-          'El dispositivo se encuentra sin conexión, todos los datos se almacenaran para sincronizar una vez se retome la conexión.',
-        message: 'Dispositivo sin conexión.',
-        type: 'info',
-        icon: 'warning',
-        duration: 2500,
-        style: {
-          paddingVertical: 15,
-          backgroundColor: 'red',
-        },
-        titleStyle: {
-          fontSize: 18,
-        },
-        textStyle: {
-          fontSize: 14,
-        },
-      })
+      Alert.alert(
+        'Dispositivo sin conexión.',
+        'El dispositivo se encuentra sin conexión, todos los datos se almacenaran para sincronizar una vez se retome la conexión.'
+      )
     }
   }, [isConnected]);
-
   return (
     <AuthProvider>
-      <ApplicationProvider {...eva} theme={eva.light}>
-        <DataProvider>
-          <SalesProvider>
-            <Navigation />
-          </SalesProvider>
-        </DataProvider>
-      </ApplicationProvider>
+      <LoadingProvider>
+        <ApplicationProvider {...eva} theme={eva.light}>
+          <DataProvider>
+            <SalesProvider>
+              <Navigation />
+            </SalesProvider>
+          </DataProvider>
+        </ApplicationProvider>
+      </LoadingProvider>
     </AuthProvider>
   );
 };

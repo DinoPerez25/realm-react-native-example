@@ -4,27 +4,32 @@ import { useAuth } from "../../Contexts/AuthContext";
 import { Button, Text } from '@ui-kitten/components';
 
 export function Login({ navigation }) {
+  const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { user, signUp, signIn } = useAuth();
 
   useEffect(() => {
     if (user != null) {
-      navigation.navigate("FormSection");
+      navigation.navigate("MenuSection");
     }
   }, [user]);
 
   const onPressSignIn = async () => {
     try {
+      setLoading(true);
       await signIn(email, password);
+      setLoading(false);
     } catch (error) {
       Alert.alert(`Failed to sign in: ${error.message}`);
     }
   };
   const onPressSignUp = async () => {
     try {
+      setLoading(true);
       await signUp(email, password);
-      signIn(email, password);
+      await signIn(email, password);
+      setLoading(false);
     } catch (error) {
       Alert.alert(`Failed to sign up: ${error.message}`);
     }
@@ -54,9 +59,18 @@ export function Login({ navigation }) {
         />
       </View>
       <View style={styles.buttonsContainer}>
-
-        <Button onPress={onPressSignIn}>Iniciar sesión</Button>
-        <Button onPress={onPressSignUp} size='small' appearance='ghost'>Registrase</Button>
+        <View style={styles.button}>
+          <Button onPress={onPressSignIn} disabled={loading}>Iniciar sesión</Button>
+        </View>
+        <View style={styles.button}>
+          <Button
+            onPress={onPressSignUp}
+            size='small'
+            appearance='ghost'
+            disabled={loading}>
+            Registrase
+          </Button>
+        </View>
       </View>
     </View>
   );
@@ -84,4 +98,7 @@ const styles = StyleSheet.create({
   buttonsContainer: {
     marginVertical: 10,
   },
+  button: {
+    marginVertical: 5,
+  }
 });

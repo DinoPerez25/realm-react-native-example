@@ -1,51 +1,83 @@
 
-import React, { useContext, useState, useRef } from "react";
+import React, { useContext, useState, useRef, useEffect } from "react";
 import Realm from "realm";
 import { Items, Salespeople } from '../schemas';
-import app from "../realmApp";
+import { Alert } from "react-native";
+import { useAuth } from "./AuthContext";
 
 const DataContext = React.createContext(null);
 
 const DataProvider = ({ children }) => {
   const [data, setData] = useState(null);
-  const [user] = useState(app.currentUser);
+  const { user } = useAuth();
   const realmRef = useRef(null);
 
   const getObjectValues = (array) => {
+    return array.map(item => { return JSON.parse(JSON.stringify(item)) });
+  };
+
+  const getSelectOptions = (array) => {
     return array.map(item => { return { value: item._id, label: item.name } });
   };
 
-  const syncData = () => {
-    console.log('ENTRE', user)
+  const findNameById = (id, key) => {
+    if (data[key]) {
+      const list = data[key];
+      console.log(list);
+      const result = list.find(item => item._id === id);
+      return result.name;
+    }
+    Alert.alert('Error', `Datos de ${key} no encontrados, favor actualizar`);
+  };
+
+  useEffect(() => {
+    console.log('user in data', user?.id);
     if (user) {
+      console.log('EXTABLECIENCO CONEXION PARA DATA');
       Realm.open({
         schema: [Items.schema, Salespeople.schema],
         sync: {
-          user,
-          partitionValue: 'PUBLIC'
-        }
-      }).then(async (realm) => {
-        console.log(realm.objects('Items'));
-        const items = await realm.objects('Items');
-        const salespeople = await realm.objects('Salespeople');
-        setData({ items: getObjectValues(items), salespeople: getObjectValues(salespeople) });
-      }
-      );
+          user: user,
+          partitionValue: `PUBLIC`,
+        },
+      }).then((realm) => {
+        realmRef.current = realm;
+        console.log('CARGANDO DATA...');
+        const items = getObjectValues(realm.objects('Items'));
+        const salespeople = getObjectValues(realm.objects('Salespeople'));
+        setData({
+          items: getObjectValues(items),
+          itemsOptions: getSelectOptions(items),
+          salespeople: getObjectValues(salespeople),
+          salespeopleOptions: getSelectOptions(salespeople),
 
-      return () => {
-        const userRealm = realmRef.current;
-        if (userRealm) {
-          userRealm.close();
-          realmRef.current = null;
-        }
-      };
+        });
+        console.log('DATA CARGADA EXITOSAMENTE');
+      }).catch(error => {
+        Alert.alert('Error', error);
+      });
     }
-  }
+  }, [user]);
+
+  /*const syncData = () => {
+    const dataRealm = realmRef.current;
+    const items = getObjectValues(dataRealm.objects('Items'));
+    const salespeople = getObjectValues(dataRealm.objects('Salespeople'));
+    setData({
+      items: getObjectValues(items),
+      itemsOptions: getSelectOptions(items),
+      salespeople: getObjectValues(salespeople),
+      salespeopleOptions: getSelectOptions(salespeople),
+
+    });
+    Alert.alert('Exito', `Datos actualizados exitosamente`);
+  };*/
 
   return (
     <DataContext.Provider
       value={{
-        syncData,
+        //syncData,
+        findNameById,
         data,
         user
       }}
