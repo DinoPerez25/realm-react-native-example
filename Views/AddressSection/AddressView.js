@@ -14,7 +14,7 @@ import { fetchAddresses } from '../../API/get-addresses-api';
 import { getPublicRealm } from '../../Database';
 import { Address } from '../../schemas';
 
-const size = 100000;
+const size = 10000;
 let currentPage = 0;
 const pages = 130;
 const schema = yup.object({
@@ -22,6 +22,7 @@ const schema = yup.object({
 });
 
 const AddressView = ({ navigation }) => {
+  const [countDB, setCountDB] = useState(0);
   const [loading, setLoading] = useState(false);
   const [addressesFiltered, setAddressesFiltered] = useState([]);
 
@@ -103,6 +104,11 @@ const AddressView = ({ navigation }) => {
     });
   };
 
+  const countAll = async () => {
+    const realm = await getPublicRealm();
+    setCountDB(realm.objects('Addresses').length);
+  };
+
   return (
     <ScrollView style={styles.container}>
       <Modal visible={loading}>
@@ -111,6 +117,7 @@ const AddressView = ({ navigation }) => {
       <View style={styles.container}>
         <View style={styles.headerActions}>
           <Button onPress={() => getData()}>{`Sync: ${currentPage}/${pages}`}</Button>
+          <Button onPress={() => countAll()}>{`Count all: ${countDB}`}</Button>
           <Button onPress={() => navigation.navigate('MenuSection')}>
             Volver
           </Button>
