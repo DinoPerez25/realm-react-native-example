@@ -1,32 +1,39 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { ScrollView, StyleSheet, View, } from 'react-native'
-import { Button, Modal, Spinner } from '@ui-kitten/components';
+import { Button, Text } from '@ui-kitten/components';
 import { useAuth } from '../../Contexts/AuthContext';
-import { useData } from '../../Contexts/DataContext';
+import { initPublicRealm } from '../../Database';
 
 const MenuView = ({ navigation }) => {
-  const [loading, setLoading] = useState(false);
-  const { signOut } = useAuth();
-  const { fetchDataCall } = useData();
+  const { signOut, user } = useAuth();
+
+  const [loaded, setLoaded] = React.useState(false);
 
   useEffect(() => {
-    setLoading(true);
-    fetchDataCall();
-    setLoading(false);
-  }, []);
+    console.log('APP INIT, user? ->', user?.id)
+    console.log('CARGANDO INIT PUBLIC REALM', user?.id)
+    if (user) {
+      initPublicRealm(user).then(() => setLoaded(true)).catch(error => console.log(error, 'initPublicRealm()'));
+    }
+  }, [setLoaded, user]);
 
+  if (!loaded) {
+    return (
+      <ScrollView>
+        <View style={styles.container}>
+          <Text>Cargando...</Text>
+        </View >
+      </ScrollView>
+    )
+  }
   return (
     <ScrollView>
-      <Modal visible={loading} backdropStyle={styles.backdrop}>
-        <Spinner></Spinner>
-      </Modal>
       <View style={styles.container}>
         <View style={styles.headerActions}>
           <Button onPress={async () => await signOut()}>Cerrar sesión</Button>
         </View>
         <View style={styles.body}>
-          <Button onPress={() => navigation.navigate("FormSection")} style={styles.button}>Crear venta</Button>
-          <Button onPress={() => navigation.navigate("SalesSection")} style={styles.button}>Ver ventas</Button>
+          <Button onPress={() => navigation.navigate("AddressSection")} style={styles.button}>Buscar dirección</Button>
         </View>
       </View >
     </ScrollView>

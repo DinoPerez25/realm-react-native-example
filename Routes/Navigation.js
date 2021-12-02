@@ -11,12 +11,16 @@ import SalesView from '../Views/SalesSection/SalesView';
 import MenuSection from '../Views/MenuSection/MenuSection';
 import MenuView from '../Views/MenuSection/MenuView';
 
+import AddressSection from '../Views/AddressSection/AddressSection';
+import AddressView from '../Views/AddressSection/AddressView';
+
 import { Login } from '../Views/Login/Login';
 
 const MainStack = createStackNavigator();
 const MenuStack = createStackNavigator();
 const FormStack = createStackNavigator();
 const SalesStack = createStackNavigator();
+const AddressStack = createStackNavigator();
 
 export const MenuNavigator = () => (
   <MenuStack.Navigator headerMode="none">
@@ -33,6 +37,11 @@ export const SalesNavigator = () => (
     <SalesStack.Screen name="SalesView" component={SalesView} options={{ title: "SalesView" }} />
   </SalesStack.Navigator>
 );
+export const AddressNavigator = () => (
+  <AddressStack.Navigator headerMode="none">
+    <AddressStack.Screen name="AddressView" component={AddressView} options={{ title: "AddressView" }} />
+  </AddressStack.Navigator>
+);
 const Navigation = () => {
   return (
     <>
@@ -42,6 +51,7 @@ const Navigation = () => {
           <MainStack.Screen name="MenuSection" component={MenuSection} />
           <MainStack.Screen name="FormSection" component={FormSection} />
           <MainStack.Screen name="SalesSection" component={SalesSection} />
+          <MainStack.Screen name="AddressSection" component={AddressSection} />
         </MainStack.Navigator>
       </NavigationContainer>
     </>

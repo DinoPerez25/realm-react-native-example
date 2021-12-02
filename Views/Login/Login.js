@@ -21,6 +21,7 @@ export function Login({ navigation }) {
       await signIn(email, password);
       setLoading(false);
     } catch (error) {
+      setLoading(false);
       Alert.alert(`Failed to sign in: ${error.message}`);
     }
   };
@@ -31,6 +32,7 @@ export function Login({ navigation }) {
       await signIn(email, password);
       setLoading(false);
     } catch (error) {
+      setLoading(false);
       Alert.alert(`Failed to sign up: ${error.message}`);
     }
   };

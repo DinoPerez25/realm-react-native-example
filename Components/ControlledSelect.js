@@ -22,7 +22,7 @@ const ControlledSelect = ({
         render={({ field: { onChange, onBlur, value } }) => (
           <RNPickerSelect
             {...selectProps}
-            style={styles.inputStyle}
+            style={styles.input}
             textInputProps={textInputProps}
             onBlur={(event) => {
               onBlur(event);
@@ -48,11 +48,8 @@ const styles = StyleSheet.create({
   error: {
     color: 'red'
   },
-  inputStyle: {
-    borderWidth: 1,
-    borderColor: 'gray',
-    borderRadius: 4,
-    paddingLeft: 15,
-    width: '100%',
+  input: {
+    backgroundColor: 'gray',
+    marginHorizontal: 50,
   },
 });

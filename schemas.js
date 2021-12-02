@@ -1,4 +1,4 @@
-import { UUID } from "bson";
+import { UUID, ObjectID } from "bson";
 
 export class Sale {
   constructor({
@@ -87,5 +87,32 @@ export class Salespeople {
       name: 'string',
     },
     primaryKey: "_id",
+  };
+}
+export class Address {
+  constructor({
+    name,
+    _id = new ObjectID(),
+    addressId,
+    department,
+    departmentId,
+    fullAddress,
+  }) {
+    this._id = _id;
+    this.addressId = addressId;
+    this.department = department;
+    this.departmentId = departmentId;
+    this.fullAddress = fullAddress;
+  }
+  static schema = {
+    name: 'Addresses',
+    properties: {
+      _id: 'objectId',
+      addressId: 'int',
+      department: 'string',
+      departmentId: 'int',
+      fullAddress: 'string',
+    },
+    primaryKey: '_id',
   };
 }

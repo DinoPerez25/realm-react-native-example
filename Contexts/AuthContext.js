@@ -1,46 +1,12 @@
 import React, { useContext, useState } from "react";
 import Realm from "realm";
+import { getPrivateRealm, getPublicRealm } from "../Database";
 import app from "../realmApp";
-import { Sale, User } from '../schemas'
 
 const AuthContext = React.createContext(null);
 
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(app.currentUser);
-
-  const getRealm = async () => {
-    if (user) {
-      const realmFileBehavior = {
-        type: "downloadBeforeOpen",
-        timeOut: 1000,
-        timeOutBehavior: "openLocalRealm",
-      };
-      const config = {
-        schema: [
-          User.schema,
-          Sale.schema,
-        ],
-        sync: {
-          user,
-          partitionValue: `user=${user?.id}`,
-          existingRealmFileBehavior: realmFileBehavior,
-          newRealmFileBehavior: realmFileBehavior,
-        },
-      };
-      return Realm.open(config);
-    }
-  };
-  const getLocalRealm = async () => {
-    if (user) {
-      const config = {
-        schema: [
-          User.schema,
-          Sale.schema,
-        ],
-      };
-      return Realm.open(config);
-    }
-  };
 
   const signIn = async (email, password) => {
     const creds = Realm.Credentials.emailPassword(email, password);
@@ -52,13 +18,17 @@ const AuthProvider = ({ children }) => {
     await app.emailPasswordAuth.registerUser({ email, password });
   };
 
-  const signOut = () => {
+  const signOut = async () => {
     if (user == null) {
       console.warn("Not logged in, can't log out!");
       return;
     }
     user.logOut();
     setUser(null);
+    const privateRealm = await getPrivateRealm();
+    privateRealm.close();
+    const publicRealm = await getPublicRealm();
+    publicRealm.close();
   };
 
   return (
@@ -67,8 +37,6 @@ const AuthProvider = ({ children }) => {
         signUp,
         signIn,
         signOut,
-        getRealm,
-        getLocalRealm,
         user,
       }}
     >
