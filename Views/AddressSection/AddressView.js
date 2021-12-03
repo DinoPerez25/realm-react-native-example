@@ -25,6 +25,7 @@ const AddressView = ({ navigation }) => {
   const [countDB, setCountDB] = useState(0);
   const [loading, setLoading] = useState(false);
   const [addressesFiltered, setAddressesFiltered] = useState([]);
+  const [counter, setCounter] = useState(0);
 
   const { control, trigger, getValues } = useForm({
     resolver: yupResolver(schema),
@@ -34,6 +35,7 @@ const AddressView = ({ navigation }) => {
 
   const getData = useCallback(async () => {
     setLoading(true);
+    setCounter(0);
     try {
       while (currentPage < pages) {
         console.log(`${currentPage}/${pages}`);
@@ -52,6 +54,7 @@ const AddressView = ({ navigation }) => {
             realm.create('Addresses', newAddress);
           });
         });
+        setCounter(currentPage);
         currentPage += 1;
       }
       setLoading(false);
@@ -60,7 +63,7 @@ const AddressView = ({ navigation }) => {
       await AsyncStorage.setItem('progressSyncData', currentPage);
       console.log(error, 'getAddresses()');
     }
-  }, []);
+  }, [setCounter]);
 
   const getObjectValues = (array) => {
     return array.map((item) => {
@@ -116,7 +119,7 @@ const AddressView = ({ navigation }) => {
       </Modal>
       <View style={styles.container}>
         <View style={styles.headerActions}>
-          <Button onPress={() => getData()}>{`Sync: ${currentPage}/${pages}`}</Button>
+          <Button onPress={() => getData()}>{`Sync: ${counter}/${pages}`}</Button>
           <Button onPress={() => countAll()}>{`Count all: ${countDB}`}</Button>
           <Button onPress={() => navigation.navigate('MenuSection')}>
             Volver
