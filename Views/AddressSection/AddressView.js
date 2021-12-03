@@ -1,7 +1,7 @@
 /* eslint-disable array-callback-return */
 /* eslint-disable prettier/prettier */
 /* eslint-disable max-nested-callbacks */
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { ScrollView, View, StyleSheet } from 'react-native';
 import { Text, Modal, Spinner } from '@ui-kitten/components';
 import ControlledInput from '../../Components/ControlledInput';
@@ -16,7 +16,7 @@ import { Address } from '../../schemas';
 
 const size = 10000;
 let currentPage = 0;
-const pages = 130;
+const pages = 12;
 const schema = yup.object({
   address: yup.string().required('Debe digitar una direccion a buscar').trim(),
 });
@@ -32,6 +32,13 @@ const AddressView = ({ navigation }) => {
     defaultValues: {},
   });
   const { errors } = useFormState({ control });
+
+  useEffect(() => {
+(async () => {
+    const realm = await getPublicRealm();
+    setCountDB(realm.objects('Addresses').length);
+  })();
+}, [setCounter, setCountDB]);
 
   const getData = useCallback(async () => {
     setLoading(true);
@@ -107,11 +114,6 @@ const AddressView = ({ navigation }) => {
     });
   };
 
-  const countAll = async () => {
-    const realm = await getPublicRealm();
-    setCountDB(realm.objects('Addresses').length);
-  };
-
   return (
     <ScrollView style={styles.container}>
       <Modal visible={loading}>
@@ -120,7 +122,6 @@ const AddressView = ({ navigation }) => {
       <View style={styles.container}>
         <View style={styles.headerActions}>
           <Button onPress={() => getData()}>{`Sync: ${counter}/${pages}`}</Button>
-          <Button onPress={() => countAll()}>{`Count all: ${countDB}`}</Button>
           <Button onPress={() => navigation.navigate('MenuSection')}>
             Volver
           </Button>
@@ -147,7 +148,7 @@ const AddressView = ({ navigation }) => {
           <View style={styles.headerActions}>
             <View />
             <View>
-              <Text>cantidad:{`Sync: ${currentPage}/${pages}`}</Text>
+              <Text>{`Total: ${countDB}`}</Text>
             </View>
           </View>
         </View>
