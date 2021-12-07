@@ -1,38 +1,31 @@
-import React, { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, View, Text, Alert } from 'react-native'
+import React, { useCallback, useEffect, useState } from 'react';
+import { ScrollView, StyleSheet, View, Text } from 'react-native';
 import { Button, Modal, Spinner } from '@ui-kitten/components';
-import { useData } from '../../Contexts/DataContext';
 import { TrashIcon } from '../../Components/Icons';
 import { useAuth } from '../../Contexts/AuthContext';
 
 const SalesView = ({ navigation }) => {
   const { getRealm, getLocalRealm } = useAuth();
-  const { findNameById, data } = useData();
   const [sales, setSales] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (!data) {
-      Alert.alert('Error', `Datos no encontrados, favor sincronizar en el menú de la aplicación`);
-    }
-  }, [data]);
-
-
-  const fetchSalesListCall = () => {
-    getRealm().then(realm => {
-      console.log('ENTRE')
-      const salesList = realm.objects('Sales');
-      console.log('SALES -> ', salesList);
-      setSales(salesList);
-      setLoading(false);
-      return () => {
-        realm.close();
-      };
-    }).catch(error => {
-      setLoading(false);
-      console.log(error, 'ERROR');
-    });
-  };
+  const fetchSalesListCall = useCallback(() => {
+    getRealm()
+      .then((realm) => {
+        console.log('ENTRE');
+        const salesList = realm.objects('Sales');
+        console.log('SALES -> ', salesList);
+        setSales(salesList);
+        setLoading(false);
+        return () => {
+          realm.close();
+        };
+      })
+      .catch((error) => {
+        setLoading(false);
+        console.log(error, 'ERROR');
+      });
+  }, [getRealm]);
 
   const deleteSale = async (id) => {
     try {
@@ -50,9 +43,9 @@ const SalesView = ({ navigation }) => {
         console.log(error.message);
       }
     }
-  }
+  };
   const deleteLocalSale = async (id) => {
-    console.log('ENTRE')
+    console.log('ENTRE');
     try {
       const realm = await getLocalRealm();
       const deleteSale = realm.objectForPrimaryKey('Sales', id);
@@ -68,11 +61,11 @@ const SalesView = ({ navigation }) => {
         console.log(error.message);
       }
     }
-  }
+  };
 
   useEffect(() => {
     return fetchSalesListCall();
-  }, []);
+  }, [fetchSalesListCall]);
 
   const renderSales = (salesList, type) => {
     if (salesList && salesList.length !== 0) {
@@ -80,19 +73,23 @@ const SalesView = ({ navigation }) => {
         return (
           <View style={styles.sale} key={sale._id}>
             <Text>{key}</Text>
-            <Text>{findNameById(sale.itemId, 'items')}</Text>
-            <Text>{findNameById(sale.salePersonId, 'salespeople')}</Text>
+            <Text>{(sale.itemId, 'items')}</Text>
+            <Text>{(sale.salePersonId, 'salespeople')}</Text>
             <Text>{sale.quantity}</Text>
             <Text>{sale.total}</Text>
             <Text>{sale.total}</Text>
             <Button
               accessoryLeft={TrashIcon}
-              status='danger'
-              size='small'
-              onPress={() => { type === 'local' ? deleteLocalSale(sale._id) : deleteSale(sale._id) }}
+              status="danger"
+              size="small"
+              onPress={() => {
+                type === 'local'
+                  ? deleteLocalSale(sale._id)
+                  : deleteSale(sale._id);
+              }}
             />
           </View>
-        )
+        );
       });
     }
     return (
@@ -101,36 +98,36 @@ const SalesView = ({ navigation }) => {
       </View>
     );
   };
-
-
   return (
     <ScrollView>
       <Modal visible={loading} backdropStyle={styles.backdrop}>
-        <Spinner></Spinner>
+        <Spinner />
       </Modal>
       <View style={styles.container}>
         <View style={styles.headerActions}>
           <Button onPress={() => fetchSalesListCall()}>Actualizar</Button>
-          <Button onPress={() => navigation.navigate("MenuSection")}>Volver</Button>
+          <Button onPress={() => navigation.navigate('MenuSection')}>
+            Volver
+          </Button>
         </View>
         <View style={styles.salesContainer}>
           <View style={styles.titleContainer}>
             <Text style={styles.title}>VENTAS MONGO</Text>
           </View>
-          <View style={styles.headTable} >
+          <View style={styles.headTable}>
             <Text>Id</Text>
             <Text>Item ID</Text>
             <Text>Vendedor ID</Text>
             <Text>Cantidad</Text>
             <Text>Total</Text>
-            <Text></Text>
+            <Text />
           </View>
           {renderSales(sales)}
         </View>
-      </View >
+      </View>
     </ScrollView>
   );
-}
+};
 
 export default SalesView;
 
@@ -144,13 +141,11 @@ const styles = StyleSheet.create({
     width: '100%',
     flexDirection: 'row',
     justifyContent: 'space-between',
-
   },
   salesContainer: {
     marginVertical: 25,
     justifyContent: 'center',
     alignItems: 'center',
-
   },
   headTable: {
     width: '100%',
@@ -175,5 +170,5 @@ const styles = StyleSheet.create({
   title: {
     fontWeight: 'bold',
     fontSize: 18,
-  }
+  },
 });

@@ -2,7 +2,7 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable max-nested-callbacks */
 import React, { useCallback, useEffect, useState } from 'react';
-import { ScrollView, View, StyleSheet } from 'react-native';
+import { ScrollView, View, StyleSheet, TouchableOpacity } from 'react-native';
 import { Text, Modal, Spinner } from '@ui-kitten/components';
 import ControlledInput from '../../Components/ControlledInput';
 import Button from '../../Components/Button';
@@ -14,9 +14,9 @@ import { fetchAddresses } from '../../API/get-addresses-api';
 import { getPublicRealm } from '../../Database';
 import { Address } from '../../schemas';
 
-const size = 10000;
+const size = 1000;
+const pages = 10;
 let currentPage = 0;
-const pages = 12;
 const schema = yup.object({
   address: yup.string().required('Debe digitar una direccion a buscar').trim(),
 });
@@ -32,20 +32,21 @@ const AddressView = ({ navigation }) => {
     defaultValues: {},
   });
   const { errors } = useFormState({ control });
-
-  useEffect(() => {
-(async () => {
+  const refreshCountDB = useCallback(async () => {
     const realm = await getPublicRealm();
     setCountDB(realm.objects('Addresses').length);
-  })();
-}, [setCounter, setCountDB]);
+  }, [setCountDB]);
+
+  useEffect(() => {
+    refreshCountDB();
+  }, [counter, refreshCountDB]);
 
   const getData = useCallback(async () => {
     setLoading(true);
     setCounter(0);
     try {
       while (currentPage < pages) {
-        console.log(`${currentPage}/${pages}`);
+        console.log(`${currentPage + 1}/${pages}`);
         const response = await fetchAddresses(currentPage, size);
         const data = response.data.data;
         const list = data.addresses;
@@ -61,8 +62,8 @@ const AddressView = ({ navigation }) => {
             realm.create('Addresses', newAddress);
           });
         });
-        setCounter(currentPage);
         currentPage += 1;
+        setCounter(currentPage);
       }
       setLoading(false);
     } catch (error) {
@@ -106,10 +107,16 @@ const AddressView = ({ navigation }) => {
     }
     return addressesFiltered.map((item) => {
       return (
-        <View style={styles.addressCard} key={item.addressId}>
+        <TouchableOpacity
+          style={styles.addressCard}
+          key={item.addressId}
+          onPress={() => {
+            console.log(item);
+            navigation.navigate('FormSection', { selectedAddress: item });
+          }}>
           <Text>{item.addressId}</Text>
           <Text>{item.fullAddress}</Text>
-        </View>
+        </TouchableOpacity>
       );
     });
   };

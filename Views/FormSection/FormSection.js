@@ -9,9 +9,9 @@ const FormSection = ({ navigation }) => {
   useEffect(() => {
     // If there is a user logged in, go to the Projects page.
     if (!user) {
-      navigation.navigate("Login");
+      navigation.navigate('Login');
     }
-  }, [user]);
+  }, [navigation, user]);
   return (
     <View style={styles.container}>
       <FormNavigator />

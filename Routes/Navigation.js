@@ -24,22 +24,40 @@ const AddressStack = createStackNavigator();
 
 export const MenuNavigator = () => (
   <MenuStack.Navigator headerMode="none">
-    <MenuStack.Screen name="MenuView" component={MenuView} options={{ title: "MenuView" }} />
+    <MenuStack.Screen
+      name="MenuView"
+      component={MenuView}
+      options={{ title: 'MenuView' }}
+    />
   </MenuStack.Navigator>
 );
-export const FormNavigator = () => (
+export const FormNavigator = (props) => (
   <FormStack.Navigator headerMode="none">
-    <FormStack.Screen name="FormView" component={FormView} options={{ title: "FormView" }} />
+    <FormStack.Screen
+      {...props}
+      name="FormView"
+      component={FormView}
+      options={{ title: 'FormView' }}
+      p
+    />
   </FormStack.Navigator>
 );
 export const SalesNavigator = () => (
   <SalesStack.Navigator headerMode="none">
-    <SalesStack.Screen name="SalesView" component={SalesView} options={{ title: "SalesView" }} />
+    <SalesStack.Screen
+      name="SalesView"
+      component={SalesView}
+      options={{ title: 'SalesView' }}
+    />
   </SalesStack.Navigator>
 );
 export const AddressNavigator = () => (
   <AddressStack.Navigator headerMode="none">
-    <AddressStack.Screen name="AddressView" component={AddressView} options={{ title: "AddressView" }} />
+    <AddressStack.Screen
+      name="AddressView"
+      component={AddressView}
+      options={{ title: 'AddressView' }}
+    />
   </AddressStack.Navigator>
 );
 const Navigation = () => {

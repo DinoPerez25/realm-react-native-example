@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
-import { ScrollView, StyleSheet, View, } from 'react-native'
+import { ScrollView, StyleSheet, View } from 'react-native';
 import { Button, Text } from '@ui-kitten/components';
 import { useAuth } from '../../Contexts/AuthContext';
-import { initPublicRealm } from '../../Database';
+import { initPrivateRealm, initLocalRealm } from '../../Database';
 
 const MenuView = ({ navigation }) => {
   const { signOut, user } = useAuth();
@@ -10,10 +10,15 @@ const MenuView = ({ navigation }) => {
   const [loaded, setLoaded] = React.useState(false);
 
   useEffect(() => {
-    console.log('APP INIT, user? ->', user?.id)
-    console.log('CARGANDO INIT PUBLIC REALM', user?.id)
+    console.log('APP INIT, user? ->', user?.id);
+    console.log('CARGANDO INIT PUBLIC REALM', user?.id);
     if (user) {
-      initPublicRealm(user).then(() => setLoaded(true)).catch(error => console.log(error, 'initPublicRealm()'));
+      initPrivateRealm(user)
+        .then(() => setLoaded(true))
+        .catch((error) => console.log(error, 'initPrivateRealm()'));
+      initLocalRealm(user)
+        .then(() => setLoaded(true))
+        .catch((error) => console.log(error, 'initLocalRealm()'));
     }
   }, [setLoaded, user]);
 
@@ -22,9 +27,9 @@ const MenuView = ({ navigation }) => {
       <ScrollView>
         <View style={styles.container}>
           <Text>Cargando...</Text>
-        </View >
+        </View>
       </ScrollView>
-    )
+    );
   }
   return (
     <ScrollView>
@@ -33,12 +38,17 @@ const MenuView = ({ navigation }) => {
           <Button onPress={async () => await signOut()}>Cerrar sesión</Button>
         </View>
         <View style={styles.body}>
-          <Button onPress={() => navigation.navigate("AddressSection")} style={styles.button}>Buscar dirección</Button>
+          <Button
+            onPress={() => navigation.navigate('AddressSection')}
+            style={styles.button}
+          >
+            Buscar dirección
+          </Button>
         </View>
-      </View >
+      </View>
     </ScrollView>
   );
-}
+};
 
 export default MenuView;
 
@@ -52,7 +62,8 @@ const styles = StyleSheet.create({
     width: '100%',
     flexDirection: 'row',
     justifyContent: 'flex-end',
-  }, backdrop: {
+  },
+  backdrop: {
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   body: {

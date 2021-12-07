@@ -1,60 +1,6 @@
-import { UUID, ObjectID } from "bson";
-
-export class Sale {
-  constructor({
-    _partition,
-    _id = new UUID(),
-    itemId,
-    quantity,
-    salePersonId,
-    total,
-  }) {
-    this._partition = _partition;
-    this._id = _id;
-    this.itemId = new UUID(itemId);
-    this.quantity = quantity;
-    this.salePersonId = new UUID(salePersonId);
-    this.total = total;
-  }
-  static schema = {
-    name: 'Sales',
-    properties: {
-      _id: 'uuid',
-      _partition: 'string',
-      itemId: 'uuid',
-      quantity: 'int',
-      salePersonId: 'uuid',
-      total: 'double',
-    },
-    primaryKey: "_id",
-  };
-}
-export class Items {
-  constructor({
-    name,
-    partition,
-    id = new UUID(),
-  }) {
-    this._partition = partition;
-    this._id = id;
-    this.name = name;
-  }
-  static schema = {
-    name: 'Items',
-    properties: {
-      _id: 'uuid',
-      _partition: 'string',
-      name: 'string',
-    },
-    primaryKey: "_id",
-  }
-}
+import { ObjectID } from 'bson';
 export class User {
-  constructor({
-    name,
-    _partition,
-    _id = String(new ObjectId()),
-  }) {
+  constructor({ name, _partition, _id = String(new ObjectId()) }) {
     this._partition = _partition;
     this._id = _id;
     this.name = name;
@@ -66,32 +12,11 @@ export class User {
       _partition: 'string',
       name: 'string',
     },
-    primaryKey: "_id",
-  };
-}
-export class Salespeople {
-  constructor({
-    name,
-    _partition,
-    _id = new UUID(),
-  }) {
-    this._partition = _partition;
-    this._id = _id;
-    this.name = name;
-  }
-  static schema = {
-    name: 'Salespeople',
-    properties: {
-      _id: 'uuid',
-      _partition: 'string',
-      name: 'string',
-    },
-    primaryKey: "_id",
+    primaryKey: '_id',
   };
 }
 export class Address {
   constructor({
-    name,
     _id = new ObjectID(),
     addressId,
     department,
@@ -112,6 +37,51 @@ export class Address {
       department: 'string',
       departmentId: 'int',
       fullAddress: 'string',
+    },
+    primaryKey: '_id',
+  };
+}
+
+export class Order {
+  constructor(
+    _id = new ObjectID(),
+    _partition,
+    addressId,
+    department,
+    departmentId,
+    description,
+    fullAddress,
+    locality,
+    localityId,
+    sector,
+    sectorId
+  ) {
+    this._id = _id;
+    this.addressId = addressId;
+    this.description = description;
+    this.department = department;
+    this.departmentId = departmentId;
+    this.fullAddress = fullAddress;
+    this.locality = locality;
+    this.localityId = localityId;
+    this.sector = sector;
+    this.sectorId = sectorId;
+  }
+
+  static schema = {
+    name: 'Orders',
+    properties: {
+      _id: 'objectId',
+      _partition: 'string',
+      addressId: 'int',
+      department: 'string',
+      departmentId: 'int',
+      description: 'string',
+      fullAddress: 'string',
+      locality: 'string',
+      localityId: 'int',
+      sector: 'string',
+      sectorId: 'int',
     },
     primaryKey: '_id',
   };

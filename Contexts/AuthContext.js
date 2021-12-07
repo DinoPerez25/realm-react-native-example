@@ -1,7 +1,7 @@
-import React, { useContext, useState } from "react";
-import Realm from "realm";
-import { getPrivateRealm, getPublicRealm } from "../Database";
-import app from "../realmApp";
+import React, { useContext, useState } from 'react';
+import Realm from 'realm';
+import { getPrivateRealm, getPublicRealm } from '../Database';
+import app from '../realmApp';
 
 const AuthContext = React.createContext(null);
 
@@ -48,7 +48,7 @@ const AuthProvider = ({ children }) => {
 const useAuth = () => {
   const auth = useContext(AuthContext);
   if (auth == null) {
-    throw new Error("useAuth() called outside of a AuthProvider?");
+    throw new Error('useAuth() called outside of a AuthProvider?');
   }
   return auth;
 };

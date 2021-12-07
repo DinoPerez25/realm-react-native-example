@@ -1,19 +1,19 @@
-import React, { useEffect, useState } from "react";
-import { View, TextInput, Alert, StyleSheet } from "react-native";
-import { useAuth } from "../../Contexts/AuthContext";
+import React, { useEffect, useState } from 'react';
+import { View, TextInput, Alert, StyleSheet } from 'react-native';
+import { useAuth } from '../../Contexts/AuthContext';
 import { Button, Text, Modal, Spinner } from '@ui-kitten/components';
 
 export function Login({ navigation }) {
   const [loading, setLoading] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const { user, signUp, signIn } = useAuth();
 
   useEffect(() => {
     if (user != null) {
-      navigation.navigate("MenuSection");
+      navigation.navigate('MenuSection');
     }
-  }, [user]);
+  }, [navigation, user]);
 
   const onPressSignIn = async () => {
     try {
@@ -39,9 +39,8 @@ export function Login({ navigation }) {
 
   return (
     <View style={styles.container}>
-
       <Modal visible={loading} backdropStyle={styles.backdrop}>
-        <Spinner></Spinner>
+        <Spinner />
       </Modal>
       <Text>Iniciar sesión:</Text>
       <View style={styles.inputContainer}>
@@ -52,7 +51,6 @@ export function Login({ navigation }) {
           style={styles.inputStyle}
           autoCapitalize="none"
           keyboardType="email-address"
-
         />
       </View>
       <View style={styles.inputContainer}>
@@ -66,14 +64,17 @@ export function Login({ navigation }) {
       </View>
       <View style={styles.buttonsContainer}>
         <View style={styles.button}>
-          <Button onPress={onPressSignIn} disabled={loading}>Iniciar sesión</Button>
+          <Button onPress={onPressSignIn} disabled={loading}>
+            Iniciar sesión
+          </Button>
         </View>
         <View style={styles.button}>
           <Button
             onPress={onPressSignUp}
-            size='small'
-            appearance='ghost'
-            disabled={loading}>
+            size="small"
+            appearance="ghost"
+            disabled={loading}
+          >
             Registrase
           </Button>
         </View>
@@ -106,5 +107,5 @@ const styles = StyleSheet.create({
   },
   button: {
     marginVertical: 5,
-  }
+  },
 });
